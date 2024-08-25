@@ -57,34 +57,38 @@ folder_path = os.path.join(desktop_path, 'Youtube Downloads')
 create_folder(folder_path)
 
 urls = []
+qualities = []
+
 while True:
     link = str(input("Enter the URL (or 'x' to stop): ")).strip()
     if link.lower() == 'x':
         break
     urls.append(link)
-
-for index, link in enumerate(urls, start=1):
     while True:
-        quality = input(f"Enter the desired quality of video nb {index} (144, 240, 360, 480, 720, 1080, 1440, 2160, 4320): ").strip()
+        quality = input(f"Enter the desired quality for video {len(urls)} (144, 240, 360, 480, 720, 1080, 1440, 2160, 4320): ").strip()
         if quality.isdigit() and int(quality) in [144, 240, 360, 480, 720, 1080, 1440, 2160, 4320]:
+            qualities.append(quality)
             break
         else:
             print("Invalid input. Please enter a valid resolution.")
 
+for index, link in enumerate(urls):
+    quality = qualities[index]
     while not download_video_audio(link, folder_path, quality):
-        quality = input(f"Enter a different video quality for video nb {index} (144, 240, 360, 480, 720, 1080, 1440, 2160, 4320): ").strip()
+        quality = input(f"Enter a different video quality for video {index + 1} (144, 240, 360, 480, 720, 1080, 1440, 2160, 4320): ").strip()
+        qualities[index] = quality
 
-    video_files = [f for f in os.listdir(folder_path) if f.endswith('_video.webm')]
-    audio_files = [f for f in os.listdir(folder_path) if f.endswith('_audio.webm')]
+video_files = [f for f in os.listdir(folder_path) if f.endswith('_video.webm')]
+audio_files = [f for f in os.listdir(folder_path) if f.endswith('_audio.webm')]
 
-    print("Video files found:", video_files)
-    print("Audio files found:", audio_files)
+print("Video files found:", video_files)
+print("Audio files found:", audio_files)
 
-    for video_file in video_files:
-        video_path = os.path.join(folder_path, video_file)
-        audio_file = video_file.replace('_video.webm', '_audio.webm')
-        audio_path = os.path.join(folder_path, audio_file)
-        output_file = video_file.replace('_video.webm', '.mp4')
-        output_path = os.path.join(folder_path, output_file)
-        print(f"Output path: {output_path}")
-        merge_video_audio(video_path, audio_path, output_path)
+for video_file in video_files:
+    video_path = os.path.join(folder_path, video_file)
+    audio_file = video_file.replace('_video.webm', '_audio.webm')
+    audio_path = os.path.join(folder_path, audio_file)
+    output_file = video_file.replace('_video.webm', '.mp4')
+    output_path = os.path.join(folder_path, output_file)
+    print(f"Output path: {output_path}")
+    merge_video_audio(video_path, audio_path, output_path)
